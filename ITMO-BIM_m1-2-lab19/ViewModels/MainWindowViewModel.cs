@@ -16,8 +16,8 @@ namespace ITMO_BIM_m1_2.ViewModels
         //static readonly string dbl_mask = @"\d*(,\d*)?";
         static readonly string dbl_mask = @"\d+(,\d+)?";
         readonly Regex dblRGX = new Regex(dbl_mask);
-        readonly Regex valid1numRGX = new Regex("^" + dbl_mask + "$");
-        readonly Regex valid2numRGX = new Regex("^" + dbl_mask + @"(\+|\-|\*|\\)" + dbl_mask + "$");
+        readonly Regex valid1numRGX = new Regex(@"^\-?" + dbl_mask + "$");
+        readonly Regex valid2numRGX = new Regex(@"^\-?" + dbl_mask + @"(\+|\-|\*|\\)" + dbl_mask + "$");
         
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName] string PropertyName = null)
@@ -32,6 +32,10 @@ namespace ITMO_BIM_m1_2.ViewModels
             set
             {
                 input = value;
+                if (input!= null && valid1numRGX.IsMatch(input))
+                {
+                    NumA = Convert.ToDouble(dblRGX.Matches(input)[0].Value);
+                }
                 OnPropertyChanged();
             }
         }
@@ -86,7 +90,7 @@ namespace ITMO_BIM_m1_2.ViewModels
         {
             ClearCommand = new RelayCommand(OnClearCommandExecute, CanClearCommandExecuted);
 
-            Num0_Command = new RelayCommand(OnNum0_CommandExecute); // обработка "первого" нажатия
+            Num0_Command = new RelayCommand(OnNum0_CommandExecute);
             Num1_Command = new RelayCommand(OnNum1_CommandExecute);
             Num2_Command = new RelayCommand(OnNum2_CommandExecute);
             Num3_Command = new RelayCommand(OnNum3_CommandExecute);
@@ -97,19 +101,18 @@ namespace ITMO_BIM_m1_2.ViewModels
             Num8_Command = new RelayCommand(OnNum8_CommandExecute);
             Num9_Command = new RelayCommand(OnNum9_CommandExecute);
 
-            CommaCommand = new RelayCommand(OnCommaCommandExecute); //, CanCommaCommandExecuted); // блокировка избыточных нажатий
+            CommaCommand = new RelayCommand(OnCommaCommandExecute);
 
             SignCommand = new RelayCommand(OnSignCommandExecute, CanSignCommandExecuted);
             Pow2_Command = new RelayCommand(OnPow2_CommandExecute, CanPow2_CommandExecuted);
-            PlusCommand = new RelayCommand(OnPlusCommandExecute); //, CanPlusCommandExecuted);
-            MinusCommand = new RelayCommand(OnMinusCommandExecute); //, CanMinusCommandExecuted);
-            DivideCommand = new RelayCommand(OnDivideCommandExecute); //, CanDivideCommandExecuted);
-            MultiplyCommand = new RelayCommand(OnMultiplyCommandExecute); //, CanMultiplyCommandExecuted);
+            PlusCommand = new RelayCommand(OnPlusCommandExecute, CanPlusCommandExecuted);
+            MinusCommand = new RelayCommand(OnMinusCommandExecute, CanMinusCommandExecuted);
+            DivideCommand = new RelayCommand(OnDivideCommandExecute, CanDivideCommandExecuted);
+            MultiplyCommand = new RelayCommand(OnMultiplyCommandExecute, CanMultiplyCommandExecuted);
 
             CalcCommand = new RelayCommand(OnCalcCommandExecute, CanCalcCommandExecuted);
 
         }
-
 
         public ICommand ClearCommand { get; }
         private void OnClearCommandExecute(object p)
@@ -117,6 +120,8 @@ namespace ITMO_BIM_m1_2.ViewModels
             Input = null;
             Result = 0;
             NumA = 0.0;
+            NumB = 0.0;
+            Op = null;
         }
         private bool CanClearCommandExecuted(object p)
         {
@@ -192,26 +197,19 @@ namespace ITMO_BIM_m1_2.ViewModels
         {
             Input += ",";
         }
-        //private bool CanCommaCommandExecuted(object p)
-        //{
-        //    if (Input!=null && Input.EndsWith(","))
-        //        return false;
-        //    else
-        //        return true;
-        //}
 
 
         public ICommand SignCommand { get; }
         private void OnSignCommandExecute(object p)
         {
-            if (Input !=null && Input.StartsWith("-"))
+            if (input.StartsWith("-"))
                 Input = Input.Substring(1);
             else
                 Input = "-" + Input;
         }
         private bool CanSignCommandExecuted(object p)
         {            
-            if (NumA !=0.0)
+            if (Input != null && valid1numRGX.IsMatch(input))
                 return true;
             else
                 return false;
@@ -225,7 +223,7 @@ namespace ITMO_BIM_m1_2.ViewModels
         }
         private bool CanPow2_CommandExecuted(object p)
         {
-            if (NumA != 0.0) // && Op = "")
+            if (input != null && valid1numRGX.IsMatch(input))
                 return true;
             else
                 return false;
@@ -237,54 +235,54 @@ namespace ITMO_BIM_m1_2.ViewModels
         {
             Input += "+";
         }
-        //public bool CanPlusCommandExecuted(object p)
-        //{
-        //    if (Input == null)
-        //        return false;
-        //    else
-        //        return true;
-        //}
+        public bool CanPlusCommandExecuted(object p)
+        {
+            if (Input != null && valid1numRGX.IsMatch(Input))
+                return true;
+            else
+                return false;
+        }
 
         public ICommand MinusCommand { get; }
         private void OnMinusCommandExecute(object p)
         {
             Input += "-";
         }
-        //public bool CanMinusCommandExecuted(object p)
-        //{
-        //    if (Input == null)
-        //        return false;
-        //    else
-        //        return true;
-        //}
+        public bool CanMinusCommandExecuted(object p)
+        {
+            if (Input != null && valid1numRGX.IsMatch(Input))
+                return true;
+            else
+                return false;
+        }
 
-        public ICommand DivideCommand { get; }
+    public ICommand DivideCommand { get; }
         private void OnDivideCommandExecute(object p)
         {
             Input += "/";
         }
-        //public bool CanDivideCommandExecuted(object p)
-        //{
-        //    if (Input == null)
-        //        return false;
-        //    else
-        //        return true;
-        //}
+        public bool CanDivideCommandExecuted(object p)
+        {
+            if (Input != null && valid1numRGX.IsMatch(Input))
+                return true;
+            else
+                return false;
+        }
 
-        public ICommand MultiplyCommand { get; }
+    public ICommand MultiplyCommand { get; }
         private void OnMultiplyCommandExecute(object p)
         {
             Input += "*";
         }
-        //public bool CanMultiplyCommandExecuted(object p)
-        //{
-        //    if (Input == null)
-        //        return false;
-        //    else
-        //        return true;
-        //}
+        public bool CanMultiplyCommandExecuted(object p)
+        {
+            if (Input != null && valid1numRGX.IsMatch(Input))
+                return true;
+            else
+                return false;
+        }
 
-        public ICommand CalcCommand { get; }
+    public ICommand CalcCommand { get; }
         private void OnCalcCommandExecute(object p)
         {
             //Result = Arif.Calc(Convert.ToDouble(Input));
@@ -316,25 +314,17 @@ namespace ITMO_BIM_m1_2.ViewModels
         }
         private bool CanCalcCommandExecuted(object p)
         {
-            //if (input != null && valid2numRGX.IsMatch(input))
-
-            if (input != null)
+            if (input != null && valid2numRGX.IsMatch(input))
             {
-                if (valid1numRGX.IsMatch(input))
-                {
-                    NumA = Convert.ToDouble(dblRGX.Matches(input)[0].Value);
-                }
-                else if (valid2numRGX.IsMatch(input))
-                {
-                    string NumAstr = dblRGX.Matches(input)[0].Value;
-                    NumA = Convert.ToDouble(NumAstr);
-                    //NumB = Convert.ToDouble(dblRGX.Matches(input)[1].Value); // не работает ?!
-                    string str = input;
-                    //str = str.Replace(dblRGX.Matches(input)[0].Value, null); // некорректно при numA==NumB
-                    str = str.Substring(NumAstr.Length,str.Length-NumAstr.Length);
-                    Op = str.Substring(0, 1);
-                    NumB = Convert.ToDouble(str.Substring(1, str.Length - 1));
-                }
+                string NumAstr = dblRGX.Matches(input)[0].Value;
+                NumA = Convert.ToDouble(NumAstr);
+                //NumB = Convert.ToDouble(dblRGX.Matches(input)[1].Value); // не работает ?!
+                string str = input;
+                //str = str.Replace(dblRGX.Matches(input)[0].Value, null); // некорректно при numA==NumB
+                //str = str.Substring(NumAstr.Length,str.Length-NumAstr.Length);
+                str = str.Substring(1);
+                Op = str.Substring(0, 1);
+                NumB = Convert.ToDouble(str.Substring(1, str.Length - 1));
                 return true;
             }
             else
