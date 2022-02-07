@@ -17,7 +17,7 @@ namespace ITMO_BIM_m1_2.ViewModels
         static readonly string dbl_mask = @"\d+(,\d+)?";
         readonly Regex dblRGX = new Regex(dbl_mask);
         readonly Regex valid1numRGX = new Regex(@"^\-?" + dbl_mask + "$");
-        readonly Regex valid2numRGX = new Regex(@"^\-?" + dbl_mask + @"(\+|\-|\*|\\)" + dbl_mask + "$");
+        readonly Regex valid2numRGX = new Regex(@"^\-?" + dbl_mask + @"(\+|\-|\*|\/)" + dbl_mask + "$");
         
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName] string PropertyName = null)
@@ -101,7 +101,7 @@ namespace ITMO_BIM_m1_2.ViewModels
             Num8_Command = new RelayCommand(OnNum8_CommandExecute);
             Num9_Command = new RelayCommand(OnNum9_CommandExecute);
 
-            CommaCommand = new RelayCommand(OnCommaCommandExecute);
+            CommaCommand = new RelayCommand(OnCommaCommandExecute, CanCommaCommandExecuted);
 
             SignCommand = new RelayCommand(OnSignCommandExecute, CanSignCommandExecuted);
             Pow2_Command = new RelayCommand(OnPow2_CommandExecute, CanPow2_CommandExecuted);
@@ -196,6 +196,14 @@ namespace ITMO_BIM_m1_2.ViewModels
         private void OnCommaCommandExecute(object p)
         {
             Input += ",";
+        }
+        private bool CanCommaCommandExecuted(object p)
+        {
+            Regex nuMendingRGX = new Regex(@"\d$");
+            if (input!=null && nuMendingRGX.IsMatch(input))
+                return true;
+            else
+                return false;
         }
 
 

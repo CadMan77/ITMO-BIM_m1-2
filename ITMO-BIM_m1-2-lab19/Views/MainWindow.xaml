@@ -61,7 +61,6 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.ColumnSpan="4" Background="LightCyan" Margin="2">
-            <!--<TextBox x:Name="inTB" Text="567890*1234,56" />-->
             <TextBox x:Name="inTB" Text="{Binding Path=Input}"/>
             <TextBox x:Name="outTB" Grid.Row="2" Text="{Binding Path=Result}" IsReadOnly="True"/>  <!--разделитель д.б. запятая-->          
         </StackPanel>
