@@ -285,7 +285,6 @@ namespace ITMO_BIM_m1_2.ViewModels
     public ICommand CalcCommand { get; }
         private void OnCalcCommandExecute(object p)
         {
-            //Result = Arif.Calc(Convert.ToDouble(Input));
             switch (Op)
             {
                 case "+":
@@ -324,15 +323,8 @@ namespace ITMO_BIM_m1_2.ViewModels
                     NumA = -NumA;
                     str = str.Substring(1);
                 }
-                NumB = Convert.ToDouble(dblRGX.Matches(input)[1].Value); // не работает ?!
-                //str = str.Replace(dblRGX.Matches(input)[0].Value, null); // некорректно при numA==NumB
-                //str = str.Substring(NumAstr.Length,str.Length-NumAstr.Length);
-
-                //str = str.Substring(1);
-                //Op = str.Substring(0, 1);
-
+                NumB = Convert.ToDouble(dblRGX.Matches(input)[1].Value);
                 Op = str.Substring(1).Substring(0, 1);
-                //NumB = Convert.ToDouble(str.Substring(1, str.Length - 1));
                 return true;
             }
             else
