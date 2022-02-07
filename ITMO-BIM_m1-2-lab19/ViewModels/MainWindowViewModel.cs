@@ -332,7 +332,7 @@ namespace ITMO_BIM_m1_2.ViewModels
                     str = str.Substring(1);
                 }
                 NumB = Convert.ToDouble(dblRGX.Matches(input)[1].Value);
-                Op = str.Substring(1).Substring(0, 1);
+                Op = str.Substring(NumAstr.Length, 1);
                 return true;
             }
             else
