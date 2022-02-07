@@ -199,11 +199,11 @@ namespace ITMO_BIM_m1_2.ViewModels
         }
         private bool CanCommaCommandExecuted(object p)
         {
-            Regex nuMendingRGX = new Regex(@"\d$");
-            if (input!=null && nuMendingRGX.IsMatch(input))
-                return true;
-            else
+            Regex nuMendingRGX = new Regex(@",(\d)+$");
+            if (input == null || nuMendingRGX.IsMatch(input))
                 return false;
+            else
+                return true;
         }
 
 
